@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "GitTrunkBranchComparer": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\johnr\\Projects\\phoenix-core-api\" \"2024-01-23\" dev master"
+    }
+  }
+}
