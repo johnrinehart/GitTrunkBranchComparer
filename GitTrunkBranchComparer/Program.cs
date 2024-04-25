@@ -10,11 +10,13 @@ using (var powershell = PowerShell.Create())
 {
     powershell.AddScript($"cd {directory}");
 
-    powershell.AddScript(@$"git log --pretty=oneline --after=""{after}"" --format=""%s"" {branch1}");
+    //powershell.AddScript(@$"git log --pretty=oneline --after=""{after}"" --format=""%ad %s"" {branch1}");
+    powershell.AddScript(@$"git log --pretty=format:""%ai %s"" --after=""{after}"" {branch1}");
     var results1 = powershell.Invoke();
     var list1 = results1.Select(x => x.ToString()).Order().ToList();
 
-    powershell.AddScript(@$"git log --pretty=oneline --after=""{after}"" --format=""%s"" {branch2}");
+    //powershell.AddScript(@$"git log --pretty=oneline --after=""{after}"" --format=""%ad %s"" {branch2}");
+    powershell.AddScript(@$"git log --pretty=format:""%ai %s"" --after=""{after}"" {branch2}");
     var results2 = powershell.Invoke();
     var list2 = results2.Select(x => x.ToString()).Order().ToList();
 
