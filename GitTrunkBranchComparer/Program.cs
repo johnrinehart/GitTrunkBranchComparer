@@ -10,25 +10,21 @@ using (var powershell = PowerShell.Create())
 {
     powershell.AddScript($"cd {directory}");
 
-    //powershell.AddScript(@$"git log --pretty=oneline --after=""{after}"" --format=""%ad %s"" {branch1}");
     powershell.AddScript(@$"git log --pretty=format:""%ai %s"" --after=""{after}"" {branch1}");
     var results1 = powershell.Invoke();
     var list1 = results1.Select(x => x.ToString()).Order().ToList();
 
-    //powershell.AddScript(@$"git log --pretty=oneline --after=""{after}"" --format=""%ad %s"" {branch2}");
     powershell.AddScript(@$"git log --pretty=format:""%ai %s"" --after=""{after}"" {branch2}");
     var results2 = powershell.Invoke();
     var list2 = results2.Select(x => x.ToString()).Order().ToList();
 
     var list3 = list1.Except(list2).ToList();
 
-    //Console.WriteLine($"Commits that are on {branch1} but not on {branch2} since {after} are:");
-    AnsiConsole.MarkupLineInterpolated($"[springgreen2]Commits since <{after}> that are on <{branch1}> but not on <{branch2}>:[/]");
+    AnsiConsole.MarkupLineInterpolated($"Commits since [gold3_1]{after}[/] that are on [gold3_1]{branch1}[/] but not on [gold3_1]{branch2}[/]:\n");
     foreach (var item in list3)
     {
         var datepart = item[..20];
         var messagepart = item[26..];
-        AnsiConsole.MarkupLineInterpolated($"[green]{datepart}[/][red]{messagepart}[/]");
-        //AnsiConsole.MarkupLineInterpolated($"[red]{item}[/]");
+        AnsiConsole.MarkupLineInterpolated($"[springgreen1]{datepart}[/][red]{messagepart}[/]");
     }
 }
