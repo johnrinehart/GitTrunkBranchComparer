@@ -23,9 +23,12 @@ using (var powershell = PowerShell.Create())
     var list3 = list1.Except(list2).ToList();
 
     //Console.WriteLine($"Commits that are on {branch1} but not on {branch2} since {after} are:");
-    AnsiConsole.MarkupLineInterpolated($"[green]Commits since <{after}> that are on <{branch1}> but not on <{branch2}>:[/]");
+    AnsiConsole.MarkupLineInterpolated($"[springgreen2]Commits since <{after}> that are on <{branch1}> but not on <{branch2}>:[/]");
     foreach (var item in list3)
     {
-        AnsiConsole.MarkupLineInterpolated($"[red]{item}[/]");
+        var datepart = item[..20];
+        var messagepart = item[26..];
+        AnsiConsole.MarkupLineInterpolated($"[green]{datepart}[/][red]{messagepart}[/]");
+        //AnsiConsole.MarkupLineInterpolated($"[red]{item}[/]");
     }
 }
