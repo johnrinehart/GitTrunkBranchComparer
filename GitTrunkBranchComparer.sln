@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34322.80
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitTrunkBranchComparer", "GitTrunkBranchComparer\GitTrunkBranchComparer.csproj", "{8AF715B8-9CA8-4CB0-8592-4847C48EA826}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitTrunkBranchComparer", "GitTrunkBranchComparer\GitTrunkBranchComparer.csproj", "{8AF715B8-9CA8-4CB0-8592-4847C48EA826}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,5 +21,16 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1ECBA72C-6BE5-493A-89CA-F8932B06F658}
+	EndGlobalSection
+	GlobalSection(AutomaticVersions) = postSolution
+		UpdateAssemblyVersion = True
+		UpdateAssemblyFileVersion = True
+		UpdateAssemblyInfoVersion = True
+		AssemblyVersionSettings = None.None.IncrementWithResetOnIncrease.None
+		AssemblyFileVersionSettings = None.None.IncrementWithResetOnIncrease.None
+		UpdatePackageVersion = False
+		AssemblyInfoVersionSemVerSettings = AssemblyVersion.IncrementWithAutoReset.None
+		AssemblyInfoVersionType = SemVer1
+		InheritWinAppVersionFrom = None
 	EndGlobalSection
 EndGlobal
