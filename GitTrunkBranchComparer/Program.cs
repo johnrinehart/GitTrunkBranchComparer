@@ -25,6 +25,6 @@ using (var powershell = PowerShell.Create())
     {
         var datepart = item[..20];
         var messagepart = item[26..];
-        AnsiConsole.MarkupLineInterpolated($"[springgreen1]{datepart}[/][red]{messagepart}[/]");
+        AnsiConsole.MarkupLineInterpolated($"[springgreen1]{datepart}[/][steelblue3]{messagepart}[/]");
     }
 }
