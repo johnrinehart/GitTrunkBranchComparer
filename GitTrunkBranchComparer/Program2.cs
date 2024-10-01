@@ -3,7 +3,7 @@ using Spectre.Console;
 
 static internal class Program2
 {
-    static internal void CompareBranches2(string directory, string after, string branch1, string branch2)
+    static internal void CompareBranches2(string directory, string after, string branch1, string branch2, bool contains, string filter)
     {
 
         var afterOffset = DateTimeOffset.Parse(after);//"2023-09-05"; // date to start looking for commits
@@ -24,6 +24,11 @@ static internal class Program2
         var list1 = commits1.Select(commit => $"{commit.Author.When:yyyy/MM/dd HH:mm:ss} {commit.MessageShort}").ToList();
         var list2 = commits2.Select(commit => $"{commit.Author.When:yyyy/MM/dd HH:mm:ss} {commit.MessageShort}").ToList();
         var list3 = list1.Except(list2).Order().ToList();
+
+        if (!string.IsNullOrEmpty(filter))
+        {
+            list3 = contains ? list3.Where(x => x.Contains(filter)).ToList() : list3.Where(x => !x.Contains(filter)).ToList();
+        }
 
         // Log program version
         var version = typeof(Program).Assembly.GetName().Version;

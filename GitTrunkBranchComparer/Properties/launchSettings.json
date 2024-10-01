@@ -2,7 +2,7 @@
   "profiles": {
     "GitTrunkBranchComparer": {
       "commandName": "Project",
-      "commandLineArgs": "\"D:\\Projects\\phoenix-core-api\" \"2024-01-23\" hm master"
+      "commandLineArgs": "\"D:\\Projects\\phoenix-core-api\" \"2024-01-23\" hm master false test"
     }
   }
 }

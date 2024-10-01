@@ -26,7 +26,8 @@ Global
 		UpdateAssemblyVersion = True
 		UpdateAssemblyFileVersion = True
 		UpdateAssemblyInfoVersion = True
-		AssemblyVersionSettings = None.None.IncrementWithResetOnIncrease.None
+		ShouldCreateLogs = True
+		AssemblyVersionSettings = None.Increment.IncrementWithResetOnIncrease.None
 		AssemblyFileVersionSettings = None.None.IncrementWithResetOnIncrease.None
 		UpdatePackageVersion = False
 		AssemblyInfoVersionSemVerSettings = AssemblyVersion.IncrementWithAutoReset.None
