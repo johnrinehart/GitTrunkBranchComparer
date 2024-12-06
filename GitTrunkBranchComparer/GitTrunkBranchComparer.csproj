@@ -1,34 +1,34 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <Title>GitTrunkBranchComparer $(VersionPrefix)</Title>
-    <AssemblyVersion>1.20.0.0</AssemblyVersion>
-    <FileVersion>1.0.32.0</FileVersion>
-    <Version>1.1.2</Version>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Title>GitTrunkBranchComparer $(VersionPrefix)</Title>
+        <AssemblyVersion>1.20.0.0</AssemblyVersion>
+        <FileVersion>1.0.32.0</FileVersion>
+        <Version>1.1.2</Version>
+    </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <ShouldCreateLogs>True</ShouldCreateLogs>
-    <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
-    <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
-    <UpdateAssemblyFileVersion>True</UpdateAssemblyFileVersion>
-    <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
-    <AssemblyVersionSettings>None.None.IncrementWithResetOnIncrease.None</AssemblyVersionSettings>
-    <UpdatePackageVersion>True</UpdatePackageVersion>
-    <AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
-    <InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
-    <AssemblyFileVersionSettings>None.None.IncrementWithResetOnIncrease.None</AssemblyFileVersionSettings>
-    <PackageVersionSettings>AssemblyVersion.IncrementWithAutoReset.None</PackageVersionSettings>
-  </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <ShouldCreateLogs>True</ShouldCreateLogs>
+        <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
+        <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
+        <UpdateAssemblyFileVersion>True</UpdateAssemblyFileVersion>
+        <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
+        <AssemblyVersionSettings>None.None.IncrementWithResetOnIncrease.None</AssemblyVersionSettings>
+        <UpdatePackageVersion>True</UpdatePackageVersion>
+        <AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
+        <InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
+        <AssemblyFileVersionSettings>None.None.IncrementWithResetOnIncrease.None</AssemblyFileVersionSettings>
+        <PackageVersionSettings>AssemblyVersion.IncrementWithAutoReset.None</PackageVersionSettings>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="LibGit2Sharp" Version="0.30.0" />
-    <PackageReference Include="Spectre.Console" Version="0.49.1" />
-    <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="8.0.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="LibGit2Sharp" Version="0.30.0"/>
+        <PackageReference Include="Spectre.Console" Version="0.49.1"/>
+        <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="8.0.0"/>
+    </ItemGroup>
 
 </Project>
