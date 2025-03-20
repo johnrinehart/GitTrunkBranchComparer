@@ -1,7 +1,6 @@
-﻿using LibGit2Sharp;
+﻿namespace GitTrunkBranchComparer;
+using LibGit2Sharp;
 using Spectre.Console;
-
-namespace GitTrunkBranchComparer;
 
 internal static class BranchComparer
 {
@@ -23,11 +22,23 @@ internal static class BranchComparer
             IncludeReachableFrom = branch2
         }).Where(commit => commit.Author.When > afterOffset);
 
-        var list1 = commits1.Select(commit => $"{commit.Author.When:yyyy/MM/dd HH:mm:ss} {commit.MessageShort}")
+        var firstBranch = commits1.Select(commit =>
+            new CommitDisplay
+            {
+                CommitMessage = $"{commit.Author.When:yyyy/MM/dd HH:mm:ss} {commit.MessageShort}",
+                Commit = commit
+            })
             .ToList();
-        var list2 = commits2.Select(commit => $"{commit.Author.When:yyyy/MM/dd HH:mm:ss} {commit.MessageShort}")
+
+        var secondBranch = commits2.Select(commit =>
+            new CommitDisplay
+            {
+                CommitMessage = $"{commit.Author.When:yyyy/MM/dd HH:mm:ss} {commit.MessageShort}",
+                Commit = commit
+            })
             .ToList();
-        var list3 = list1.Except(list2).Order().ToList();
+
+        var commitsNotOnSecondBranch = firstBranch.Except(secondBranch).Order().ToList();
 
         // Log program version
         var version = typeof(Program).Assembly.GetName().Version;
@@ -41,18 +52,65 @@ internal static class BranchComparer
         {
             commitsMessage += contains ? " \nincluding " : " \nexcluding ";
             commitsMessage += $"\t[gold3_1]{filter}[/]";
-            list3 = contains
-                ? list3.Where(x => x.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList()
-                : list3.Where(x => !x.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
+            commitsNotOnSecondBranch = contains
+                ? [.. commitsNotOnSecondBranch.Where(x => x.CommitMessage.Contains(filter, StringComparison.OrdinalIgnoreCase))]
+                : [.. commitsNotOnSecondBranch.Where(x => !x.CommitMessage.Contains(filter, StringComparison.OrdinalIgnoreCase))];
         }
 
         AnsiConsole.MarkupLine(commitsMessage + ":\n");
 
-        foreach (var item in list3)
+        foreach (var item in commitsNotOnSecondBranch)
         {
-            var datePart = item[..19];
-            var messagePart = item[20..];
+            var datePart = item.CommitMessage[..19];
+            var messagePart = item.CommitMessage[20..];
             AnsiConsole.MarkupLine($"[springgreen1]{datePart} [/][steelblue3]{messagePart}[/]");
         }
+
+        var cherrypicksToApply = AnsiConsole.Prompt(
+            new MultiSelectionPrompt<CommitDisplay>()
+            .Title("Select commits to cherry-pick")
+            .InstructionsText(
+            "[grey](Press [blue]<space>[/] to toggle a commit, " +
+            "[green]<enter>[/] to accept)[/]")
+            .AddChoices(commitsNotOnSecondBranch)
+            .UseConverter(x => x.CommitMessage));
+
+        // Get git email
+        var email = repo.Config.Get<string>("user.email").Value;
+
+        // Get git name
+        var name = repo.Config.Get<string>("user.name").Value;
+
+        var when = DateTimeOffset.Now;
+
+        var commiter = new Signature(name, email, when);
+
+        // abort on conflict
+        var cherrypickOptions = new CherryPickOptions
+        {
+            FileConflictStrategy = CheckoutFileConflictStrategy.Normal,
+            FailOnConflict = true,
+        };
+
+        // change repo branch to cherry-pick to if not already on it
+        if (repo.Head.FriendlyName != branch2)
+        {
+            Commands.Checkout(repo, branch2);
+        }
+
+        foreach (var cherrypick in cherrypicksToApply)
+        {
+            repo.CherryPick(cherrypick.Commit, commiter, cherrypickOptions);
+        }
     }
+}
+
+public class CommitDisplay : IComparable
+{
+    public string CommitMessage { get; set; } = string.Empty;
+
+    public Commit Commit { get; set; } = null!;
+
+    //Compare SHA
+    public int CompareTo(object? obj) => Commit.Sha.CompareTo((obj as CommitDisplay)!.Commit.Sha);
 }
