@@ -6,8 +6,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <Title>GitTrunkBranchComparer $(VersionPrefix)</Title>
-        <AssemblyVersion>1.20.0.0</AssemblyVersion>
-        <FileVersion>1.0.32.0</FileVersion>
+        <AssemblyVersion>1.26.0.0</AssemblyVersion>
+        <FileVersion>1.0.38.0</FileVersion>
         <Version>1.1.2</Version>
     </PropertyGroup>
 
@@ -26,9 +26,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="LibGit2Sharp" Version="0.30.0"/>
-        <PackageReference Include="Spectre.Console" Version="0.49.1"/>
-        <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="8.0.0"/>
+        <PackageReference Include="LibGit2Sharp" Version="0.30.0" />
+        <PackageReference Include="Spectre.Console" Version="0.49.1" />
+        <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="8.0.0" />
     </ItemGroup>
 
 </Project>
