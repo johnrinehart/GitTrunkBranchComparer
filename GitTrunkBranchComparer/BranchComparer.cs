@@ -12,13 +12,14 @@ internal static class BranchComparer
         using var repo = new Repository(directory);
         var commits1 = repo.Commits.QueryBy(new CommitFilter
         {
-            SortBy = CommitSortStrategies.Time,
+            // Sort by time in the reverse order
+            SortBy = CommitSortStrategies.Time | CommitSortStrategies.Reverse,
             IncludeReachableFrom = branch1
         }).Where(commit => commit.Author.When > afterOffset);
 
         var commits2 = repo.Commits.QueryBy(new CommitFilter
         {
-            SortBy = CommitSortStrategies.Time,
+            SortBy = CommitSortStrategies.Time | CommitSortStrategies.Reverse,
             IncludeReachableFrom = branch2
         }).Where(commit => commit.Author.When > afterOffset);
 
@@ -38,7 +39,7 @@ internal static class BranchComparer
             })
             .ToList();
 
-        var commitsNotOnSecondBranch = firstBranch.Except(secondBranch).Order().ToList();
+        var commitsNotOnSecondBranch = firstBranch.Except(secondBranch).ToList();
 
         // Log program version
         var version = typeof(Program).Assembly.GetName().Version;
@@ -103,14 +104,4 @@ internal static class BranchComparer
             repo.CherryPick(cherrypick.Commit, commiter, cherrypickOptions);
         }
     }
-}
-
-public class CommitDisplay : IComparable
-{
-    public string CommitMessage { get; set; } = string.Empty;
-
-    public Commit Commit { get; set; } = null!;
-
-    //Compare SHA
-    public int CompareTo(object? obj) => Commit.Sha.CompareTo((obj as CommitDisplay)!.Commit.Sha);
 }

@@ -6,8 +6,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <Title>GitTrunkBranchComparer $(VersionPrefix)</Title>
-        <AssemblyVersion>1.26.0.0</AssemblyVersion>
-        <FileVersion>1.0.38.0</FileVersion>
+        <AssemblyVersion>1.30.0.0</AssemblyVersion>
+        <FileVersion>1.0.42.0</FileVersion>
         <Version>1.1.2</Version>
     </PropertyGroup>
 
