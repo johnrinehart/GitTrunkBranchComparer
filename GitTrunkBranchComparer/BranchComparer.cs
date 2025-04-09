@@ -4,44 +4,65 @@ using Spectre.Console;
 
 internal static class BranchComparer
 {
-    internal static void CompareBranches(string directory, string after, string branch1, string branch2, bool contains,
-        string filter)
+    internal static void CompareBranches(string directory, string after, string branch1, string branch2, bool contains, string filter)
     {
-        var afterOffset = DateTimeOffset.Parse(after); //"2023-09-05"; // date to start looking for commits
+        var afterOffset = DateTimeOffset.Parse(after);
 
         using var repo = new Repository(directory);
-        var commits1 = repo.Commits.QueryBy(new CommitFilter
-        {
-            // Sort by time in the reverse order
-            SortBy = CommitSortStrategies.Time | CommitSortStrategies.Reverse,
-            IncludeReachableFrom = branch1
-        }).Where(commit => commit.Author.When > afterOffset);
 
-        var commits2 = repo.Commits.QueryBy(new CommitFilter
-        {
-            SortBy = CommitSortStrategies.Time | CommitSortStrategies.Reverse,
-            IncludeReachableFrom = branch2
-        }).Where(commit => commit.Author.When > afterOffset);
+        var firstBranchCommits = GetCommits(repo, branch1, afterOffset);
+        var secondBranchCommits = GetCommits(repo, branch2, afterOffset);
 
-        var firstBranch = commits1.Select(commit =>
-            new CommitDisplay
+        var commitsNotOnSecondBranch = FilterCommits(firstBranchCommits, secondBranchCommits, contains, filter);
+
+        DisplayCommits(after, branch1, branch2, filter, contains, commitsNotOnSecondBranch);
+
+        var cherrypicksToApply = PromptForCherryPicks(commitsNotOnSecondBranch);
+
+        ApplyCherryPicks(repo, branch2, cherrypicksToApply);
+    }
+
+    private static List<CommitDisplay> GetCommits(Repository repo, string branch, DateTimeOffset afterOffset)
+    {
+        return [.. repo.Commits.QueryBy(new CommitFilter
+            {
+                SortBy = CommitSortStrategies.Time | CommitSortStrategies.Reverse,
+                IncludeReachableFrom = branch
+            })
+            .Where(commit => commit.Author.When > afterOffset)
+            .Select(commit => new CommitDisplay
             {
                 CommitMessage = $"{commit.Author.When:yyyy/MM/dd HH:mm:ss} {commit.MessageShort}",
                 Commit = commit
-            })
-            .ToList();
+            })];
+    }
 
-        var secondBranch = commits2.Select(commit =>
-            new CommitDisplay
-            {
-                CommitMessage = $"{commit.Author.When:yyyy/MM/dd HH:mm:ss} {commit.MessageShort}",
-                Commit = commit
-            })
-            .ToList();
+    private static List<CommitDisplay> FilterCommits(
+        List<CommitDisplay> firstBranchCommits,
+        List<CommitDisplay> secondBranchCommits,
+        bool contains,
+        string filter)
+    {
+        var commitsNotOnSecondBranch = firstBranchCommits.Except(secondBranchCommits).ToList();
 
-        var commitsNotOnSecondBranch = firstBranch.Except(secondBranch).ToList();
+        if (!string.IsNullOrEmpty(filter))
+        {
+            commitsNotOnSecondBranch = contains
+                ? [.. commitsNotOnSecondBranch.Where(x => x.CommitMessage.Contains(filter, StringComparison.OrdinalIgnoreCase))]
+                : [.. commitsNotOnSecondBranch.Where(x => !x.CommitMessage.Contains(filter, StringComparison.OrdinalIgnoreCase))];
+        }
 
-        // Log program version
+        return commitsNotOnSecondBranch;
+    }
+
+    private static void DisplayCommits(
+        string after,
+        string branch1,
+        string branch2,
+        string filter,
+        bool contains,
+        List<CommitDisplay> commitsNotOnSecondBranch)
+    {
         var version = typeof(Program).Assembly.GetName().Version;
         AnsiConsole.WriteLine($"Program Version: {version}\n");
 
@@ -53,9 +74,6 @@ internal static class BranchComparer
         {
             commitsMessage += contains ? " \nincluding " : " \nexcluding ";
             commitsMessage += $"\t[gold3_1]{filter}[/]";
-            commitsNotOnSecondBranch = contains
-                ? [.. commitsNotOnSecondBranch.Where(x => x.CommitMessage.Contains(filter, StringComparison.OrdinalIgnoreCase))]
-                : [.. commitsNotOnSecondBranch.Where(x => !x.CommitMessage.Contains(filter, StringComparison.OrdinalIgnoreCase))];
         }
 
         AnsiConsole.MarkupLine(commitsMessage + ":\n");
@@ -66,34 +84,32 @@ internal static class BranchComparer
             var messagePart = item.CommitMessage[20..];
             AnsiConsole.MarkupLine($"[springgreen1]{datePart} [/][steelblue3]{messagePart}[/]");
         }
+    }
 
-        var cherrypicksToApply = AnsiConsole.Prompt(
+    private static List<CommitDisplay> PromptForCherryPicks(List<CommitDisplay> commitsNotOnSecondBranch)
+    {
+        return AnsiConsole.Prompt(
             new MultiSelectionPrompt<CommitDisplay>()
-            .Title("Select commits to cherry-pick")
-            .InstructionsText(
-            "[grey](Press [blue]<space>[/] to toggle a commit, " +
-            "[green]<enter>[/] to accept)[/]")
-            .AddChoices(commitsNotOnSecondBranch)
-            .UseConverter(x => x.CommitMessage));
+                .Title("Select commits to cherry-pick")
+                .InstructionsText(
+                    "[grey](Press [blue]<space>[/] to toggle a commit, " +
+                    "[green]<enter>[/] to accept)[/]")
+                .AddChoices(commitsNotOnSecondBranch)
+                .UseConverter(x => x.CommitMessage));
+    }
 
-        // Get git email
+    private static void ApplyCherryPicks(Repository repo, string branch2, List<CommitDisplay> cherrypicksToApply)
+    {
         var email = repo.Config.Get<string>("user.email").Value;
-
-        // Get git name
         var name = repo.Config.Get<string>("user.name").Value;
+        var commiter = new Signature(name, email, DateTimeOffset.Now);
 
-        var when = DateTimeOffset.Now;
-
-        var commiter = new Signature(name, email, when);
-
-        // abort on conflict
         var cherrypickOptions = new CherryPickOptions
         {
             FileConflictStrategy = CheckoutFileConflictStrategy.Normal,
             FailOnConflict = true,
         };
 
-        // change repo branch to cherry-pick to if not already on it
         if (repo.Head.FriendlyName != branch2)
         {
             Commands.Checkout(repo, branch2);
