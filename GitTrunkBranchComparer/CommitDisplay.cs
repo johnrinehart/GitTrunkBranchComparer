@@ -8,9 +8,9 @@ public class CommitDisplay : IComparable
     public Commit Commit { get; set; } = null!;
 
     //Compare SHA
-    public int CompareTo(object? obj) => Commit.Sha.CompareTo((obj as CommitDisplay)!.Commit.Sha);
+    public int CompareTo(object? obj) => Commit.Message.CompareTo((obj as CommitDisplay)!.Commit.Message);
 
-    public override bool Equals(object? obj) => obj is CommitDisplay other && Commit.Sha.Equals(other.Commit.Sha);
+    public override bool Equals(object? obj) => obj is CommitDisplay other && Commit.Message.Equals(other.Commit.Message);
 
-    public override int GetHashCode() => Commit.Sha.GetHashCode();
+    public override int GetHashCode() => Commit.Message.GetHashCode();
 }
