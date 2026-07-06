@@ -1,4 +1,5 @@
 ﻿namespace GitTrunkBranchComparer;
+
 using LibGit2Sharp;
 using Spectre.Console;
 
@@ -73,7 +74,8 @@ internal static class BranchComparer
         if (!string.IsNullOrEmpty(filter))
         {
             commitsMessage += contains ? " \nincluding " : " \nexcluding ";
-            commitsMessage += $"\t[gold3_1]{filter}[/]";
+            // escape user-provided filter so markup won't break
+            commitsMessage += $"\t[gold3_1]{Markup.Escape(filter)}[/]";
         }
 
         AnsiConsole.MarkupLine(commitsMessage + ":\n");
@@ -82,7 +84,9 @@ internal static class BranchComparer
         {
             var datePart = item.CommitMessage[..19];
             var messagePart = item.CommitMessage[20..];
-            AnsiConsole.MarkupLine($"[springgreen1]{datePart} [/][steelblue3]{messagePart}[/]");
+            // escape the commit message content before passing to markup
+            var escapedMessage = Markup.Escape(messagePart);
+            AnsiConsole.MarkupLine($"[springgreen1]{datePart} [/][steelblue3]{escapedMessage}[/]");
         }
     }
 
@@ -95,7 +99,8 @@ internal static class BranchComparer
                     "[grey](Press [blue]<space>[/] to toggle a commit, " +
                     "[green]<enter>[/] to accept)[/]")
                 .AddChoices(commitsNotOnSecondBranch)
-                .UseConverter(x => x.CommitMessage));
+                // escape displayed text so prompt rendering can't be broken by brackets, etc.
+                .UseConverter(x => Markup.Escape(x.CommitMessage)));
     }
 
     private static void ApplyCherryPicks(Repository repo, string branch2, List<CommitDisplay> cherrypicksToApply)
