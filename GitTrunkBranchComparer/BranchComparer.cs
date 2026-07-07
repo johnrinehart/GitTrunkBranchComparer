@@ -45,7 +45,7 @@ internal static class BranchComparer
         string filter)
     {
         var commitsNotOnSecondBranch = firstBranchCommits.Except(secondBranchCommits).ToList();
-
+        
         if (!string.IsNullOrEmpty(filter))
         {
             commitsNotOnSecondBranch = contains
